@@ -12,10 +12,14 @@
 #include <ftw.h>
 #include <ctype.h>
 
-#unset DEBUG
+#undef DEBUG
 
 const char * myName;
 
+/**
+ *
+ * @return
+ */
 int usage( void )
 {
     fprintf( stderr, "### %s: requires at least one path to process.\n",
@@ -37,7 +41,13 @@ const char * getExt( const char * filename )
     return end;
 }
 
-int isFilenameObfusticated( const char * filename, const char * ext )
+/**
+ *
+ * @param filename
+ * @param ext
+ * @return
+ */
+int isFilenameobfuscated( const char * filename, const char * ext )
 {
     int result = 1;
 
@@ -55,7 +65,7 @@ int isFilenameObfusticated( const char * filename, const char * ext )
         else if (islower(*p)) lower++;
         else if (isupper(*p)) upper++;
         else {
-            /* non-alphanum character - therefore it's not obfusticated */
+            /* non-alphanum character - therefore it's not obfuscated */
             result = 0;
         }
     }
@@ -65,7 +75,7 @@ int isFilenameObfusticated( const char * filename, const char * ext )
              count, xdigit, digit, lower, upper);
 #endif
 
-    /* if we haven't already determined it's not obfusticated, check */
+    /* if we haven't already determined it's not obfuscated, check */
     if (result == 1) {
         if (count == xdigit) {
             /* all the characters are valid hex digits */
@@ -83,6 +93,14 @@ int isFilenameObfusticated( const char * filename, const char * ext )
     return result;
 }
 
+/**
+ *
+ * @param path
+ * @param sb
+ * @param typeFlag
+ * @param ftwbuf
+ * @return
+ */
 int nftwEntry( const char * path, const struct stat * sb, int typeFlag, struct FTW * ftwbuf )
 {
     int result = FTW_CONTINUE;
@@ -98,8 +116,8 @@ int nftwEntry( const char * path, const struct stat * sb, int typeFlag, struct F
                 fprintf( stderr, "### file: \'%s\' ignored\n", leaf );
             } else {
                 const char * ext = getExt(leaf);
-                if ( isFilenameObfusticated( leaf, ext ) ) {
-                    fprintf( stderr, " obfusticated: \'%s\'\n", leaf );
+                if ( isFilenameobfuscated( leaf, ext ) ) {
+                    fprintf( stderr, " obfuscated: \'%s\'\n", leaf );
                     const char * parent = path;
                     const char * parend = path;
                     for ( const char * p = path; *p != '\0'; ++p )
@@ -159,6 +177,11 @@ int nftwEntry( const char * path, const struct stat * sb, int typeFlag, struct F
     return result;
 }
 
+/**
+ *
+ * @param path
+ * @return
+ */
 int scanHierarchy( const char * path )
 {
 #ifdef DEBUG
@@ -169,6 +192,12 @@ int scanHierarchy( const char * path )
     return 0;
 }
 
+/**
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main( int argc, char * argv[] )
 {
     int exitcode = 0;
