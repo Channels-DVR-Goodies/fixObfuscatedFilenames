@@ -130,12 +130,8 @@ int nftwEntry( const char * path, const struct stat * sb, int typeFlag, struct F
                     ++parent; /* skip over the slash */
                     int pLen = parend - path + 1;
                     int bLen = parend - parent;
-                    int eLen = strlen(ext );
-                    char * newPath = malloc(pLen + bLen + eLen + 1 );
-
-                    memcpy(newPath, path, pLen );
-                    memcpy(&newPath[pLen], parent, bLen );
-                    strncpy(&newPath[pLen + bLen], ext, eLen );
+                    char * newPath;
+                    asprintf( &newPath, "%.*s%.*s%s", pLen, path, bLen, parent, ext );
 
                     if ( rename( path, newPath ) == -1 ) {
                         fprintf( stderr, "### %s: rename failed (%d: %s)\n",
@@ -144,6 +140,7 @@ int nftwEntry( const char * path, const struct stat * sb, int typeFlag, struct F
 
                     fprintf(stderr, "\"%s\" -> \"%s\"\n", path, newPath );
 
+                    free(newPath);
                 }
 #ifdef DEBUG
                 else {
